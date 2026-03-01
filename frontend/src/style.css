@@ -145,6 +145,16 @@ button {
 }
 button:hover { background: #365dfb; }
 
+.detected-lang {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #44598f;
+}
+
+body.dark .detected-lang {
+  color: #b9c7ff;
+}
+
 .output-wrap {
   position: relative;
   margin-top: 10px;

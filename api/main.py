@@ -15,7 +15,16 @@ CACHE_TTL_SECONDS = int(os.getenv("CACHE_TTL_SECONDS", "86400"))
 _redis_client = None
 
 ALLOWED_MODELS = {"tiny", "small", "medium"}
-ALLOWED_LANGS = {"auto", "sr", "en", "es", "de", "fr", "it", "pt", "ru", "tr", "ar", "hi", "zh", "ja", "ko"}
+ALLOWED_LANGS = {
+    "auto",
+    # Core
+    "sr", "en", "es", "de", "fr", "it", "pt", "ru", "tr",
+    # Wider European coverage
+    "bg", "cs", "da", "nl", "et", "fi", "el", "hu", "ga", "lv", "lt",
+    "mk", "no", "pl", "ro", "sk", "sl", "sv", "uk", "hr", "bs", "is", "mt", "sq",
+    # Non-European commonly used
+    "ar", "hi", "zh", "ja", "ko",
+}
 
 class HealthResponse(BaseModel):
     status: str

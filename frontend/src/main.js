@@ -27,12 +27,6 @@ document.querySelector('#app').innerHTML = `
         </div>
 
         <div class="controls">
-          <select name="language" id="language">
-            <option value="auto">auto</option>
-            <option value="sr">sr</option>
-            <option value="en">en</option>
-            <option value="es">es</option>
-          </select>
           <select name="model" id="model">
             <option value="tiny">tiny</option>
             <option value="small" selected>small</option>
@@ -42,6 +36,7 @@ document.querySelector('#app').innerHTML = `
         </div>
       </form>
 
+      <div class="detected-lang" id="detectedLang">Detected language: -</div>
       <div class="output-wrap">
         <pre id="output" class="output">No transcript yet.</pre>
         <button id="copyBtn" class="copy-btn" type="button" title="Copy transcript">Copy</button>
@@ -61,6 +56,7 @@ const circlePct = document.getElementById('circlePct');
 const progressText = document.getElementById('progressText');
 const cancelBtn = document.getElementById('cancelBtn');
 const copyBtn = document.getElementById('copyBtn');
+const detectedLang = document.getElementById('detectedLang');
 const CIRCLE_LEN = 100.53; // approx path length for the chosen arc
 let lastTranscript = '';
 let currentXhr = null;
@@ -174,7 +170,8 @@ form.addEventListener('submit', async (e) => {
 
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('language', document.getElementById('language').value);
+  // Always auto-detect language (no manual language dropdown in UI)
+  formData.append('language', 'auto');
   formData.append('model', document.getElementById('model').value);
 
   output.textContent = 'Processing...';
@@ -198,6 +195,11 @@ form.addEventListener('submit', async (e) => {
 
     progressText.textContent = 'Upload complete';
     lastTranscript = (res.data.text || '').trim();
+    const lang = (res.data.language || 'unknown').toString();
+    const conf = typeof res.data.language_probability === 'number'
+      ? ` (${(res.data.language_probability * 100).toFixed(1)}%)`
+      : '';
+    detectedLang.textContent = `Detected language: ${lang}${conf}`;
     output.textContent = JSON.stringify(res.data, null, 2);
   } catch (err) {
     output.textContent = `Request failed: ${err.message}`;
