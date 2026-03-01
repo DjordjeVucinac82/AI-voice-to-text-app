@@ -3,3 +3,4 @@ infra/.env
 !.env.example
 frontend/node_modules/
 frontend-ui.png
+*.pem
