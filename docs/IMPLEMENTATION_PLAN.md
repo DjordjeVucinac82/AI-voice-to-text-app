@@ -1,92 +1,92 @@
-# AiVttApp — Detaljan plan
+# AiVttApp — Detailed Implementation Plan
 
-## 1) Scope i ciljevi
+## 1) Scope and goals
 
-### Primarni cilj (MVP)
-Napraviti stabilan servis koji prima audio fajl (`.ogg/.mp3/.wav`), transkribuje govor (SR/EN/auto) i vraća:
-- čist tekst
-- segmentaciju (start/end + text)
-- osnovnu metriku (trajanje, model, vreme obrade)
+### Primary goal (MVP)
+Build a stable service that accepts audio files (`.ogg/.mp3/.wav`), transcribes speech (SR/EN/auto), and returns:
+- clean text
+- segmentation (start/end + text)
+- basic metrics (duration, model, processing time)
 
 ### Non-goals (MVP)
-- real-time streaming transkripcija
-- diarization (ko je govornik)
+- real-time streaming transcription
+- speaker diarization
 - full enterprise SSO
-- napredna korekcija teksta LLM-om
+- advanced LLM-based post-correction
 
 ---
 
-## 2) Ciljni korisnici i use-case
+## 2) Target users and use cases
 
-1. **B2B timovi (support/sales/ops)**
-   - glasovne beleške → tekstualni zapis
-2. **Agencije / content timovi**
-   - brza transkripcija kratkih audio snimaka
-3. **Interni dev timovi**
-   - API-first integracija sa botovima i workflow alatima
+1. **B2B teams (support/sales/ops)**
+   - voice notes → text records
+2. **Agencies / content teams**
+   - fast transcription of short audio clips
+3. **Internal dev teams**
+   - API-first integration with bots and workflow tools
 
 ---
 
-## 3) Product features po fazama
+## 3) Product features by phase
 
-## Faza 1 — MVP (7–10 dana)
-- Upload audio fajla
+## Phase 1 — MVP (7–10 days)
+- Audio file upload
 - `POST /transcribe` (sync)
-- jezički hint: `sr`, `en`, `auto`
-- izbor modela: `tiny/small` (default `small`)
+- language hint: `sr`, `en`, `auto`
+- model selection: `tiny/small` (default `small`)
 - response: text + segments + metadata
-- osnovni web UI (upload + rezultat)
+- basic web UI (upload + result)
 - healthcheck endpoint
-- request logging i error handling
+- request logging and error handling
 
 ### Acceptance criteria
-- uspešna transkripcija za 90% test fajlova
-- jasne greške za unsupported format/oversize
-- p95 vreme obrade za 30s audio < 12s (na ciljnoj instanci)
+- successful transcription for 90% of test files
+- clear errors for unsupported format/oversized input
+- p95 processing time for 30s audio < 12s (on target instance)
 
-## Faza 2 — Production-ready core (2–3 nedelje)
+## Phase 2 — Production-ready core (2–3 weeks)
 - async jobs (`POST /jobs`, `GET /jobs/{id}`)
-- Redis queue + worker proces
-- object storage (lokalno ili S3 kompatibilno)
+- Redis queue + worker process
+- object storage (local or S3-compatible)
 - auth (API key)
 - rate limiting
-- audit log + usage metrika
+- audit logging + usage metrics
 - docker-compose deployment
 
 ### Acceptance criteria
-- horizontalno skaliranje worker-a
-- retry politika i idempotency key
-- dashboard metrika (broj job-ova, success rate, latency)
+- horizontal worker scaling
+- retry policy and idempotency key support
+- dashboard metrics (job count, success rate, latency)
 
-## Faza 3 — Monetization i integracije (2–4 nedelje)
+## Phase 3 — Monetization and integrations (2–4 weeks)
 - plans/quotas
-- billing hooks (po minutu audio)
-- Telegram/WhatsApp bot integracija
-- webhook callback kad job završi
-- export u `.txt/.json/.srt`
+- billing hooks (per minute of audio)
+- Telegram/WhatsApp bot integration
+- webhook callback when job completes
+- export to `.txt/.json/.srt`
 
 ---
 
-## 4) Tehnička arhitektura
+## 4) Technical architecture
 
-## Komponente
+## Components
 1. **API (FastAPI)**
-   - validacija ulaza
-   - auth/rate limit
-   - kreiranje job-ova
+   - input validation
+   - auth/rate limiting
+   - job creation
 2. **Worker (Python)**
-   - ffmpeg normalizacija audio
+   - ffmpeg audio normalization
    - faster-whisper inference
-   - rezultat + metadata storage
+   - result + metadata storage
 3. **Queue (Redis)**
-   - buffering i retry
+   - buffering and retries
 4. **Storage**
-   - lokalni disk (MVP) → S3 (prod)
+   - local disk (MVP) → S3 (prod)
 5. **UI (minimal React/HTMX/plain HTML)**
-   - upload forma
-   - polling job status
+   - upload form
+   - job-status polling
 
-## Predlog folder strukture
+## Proposed folder structure
 - `api/`
   - `main.py`
   - `routes/transcribe.py`
@@ -98,7 +98,7 @@ Napraviti stabilan servis koji prima audio fajl (`.ogg/.mp3/.wav`), transkribuje
   - `tasks/transcribe_task.py`
   - `audio/preprocess.py`
 - `app/`
-  - `index.html` ili React app
+  - `index.html` or React app
 - `infra/`
   - `docker-compose.yml`
   - `Dockerfile.api`
@@ -106,10 +106,10 @@ Napraviti stabilan servis koji prima audio fajl (`.ogg/.mp3/.wav`), transkribuje
 
 ---
 
-## 5) API dizajn (v1)
+## 5) API design (v1)
 
 ## `POST /v1/transcribe`
-Sync endpoint (MVP).
+Synchronous endpoint (MVP).
 
 ### Request
 - multipart/form-data:
@@ -135,9 +135,9 @@ Sync endpoint (MVP).
 ```
 
 ## `GET /health`
-- vraća status API, worker connectivity, verziju modela
+- returns API status, worker connectivity, and model version info
 
-## Faza 2 dodatak
+## Phase 2 additions
 - `POST /v1/jobs`
 - `GET /v1/jobs/{id}`
 - `GET /v1/jobs/{id}/result`
@@ -147,144 +147,144 @@ Sync endpoint (MVP).
 ## 6) Audio pipeline
 
 1. Intake audio
-2. Validacija MIME/extension/size
-3. Normalizacija preko ffmpeg:
+2. Validate MIME/extension/size
+3. Normalize via ffmpeg:
    - mono
    - 16kHz
-   - PCM WAV interni format
+   - internal PCM WAV format
 4. Inference (faster-whisper)
 5. Postprocess:
    - trim whitespace
-   - spajanje fragmenata
-6. Persist + response
+   - merge fragments
+6. Persist + return response
 
 ---
 
-## 7) Security i compliance baseline
+## 7) Security and compliance baseline
 
-- API key auth (od Faze 2)
-- file size limit (npr. 25MB MVP)
-- antivirus optional (prod)
-- sandbox path handling (no path traversal)
-- no public URL exposure bez auth
-- secrets u env varijablama
-- structured audit log
+- API key auth (from Phase 2)
+- file-size limits (e.g. 25MB MVP)
+- optional antivirus in prod
+- sandboxed path handling (no path traversal)
+- no public URL exposure without auth
+- secrets via env vars
+- structured audit logging
 
 ---
 
 ## 8) Observability
 
 - structured JSON logs
-- metrike:
+- metrics:
   - request count
   - success/error rate
   - p50/p95 latency
   - queue depth
   - worker crash count
-- alerting:
+- alerts:
   - error rate > 5%
   - queue delay > 60s
 
 ---
 
-## 9) Test strategija
+## 9) Testing strategy
 
-## Unit testovi
+## Unit tests
 - MIME validator
-- model param validation
+- model parameter validation
 - postprocess formatter
 
-## Integration
-- upload → transcribe → JSON schema verify
+## Integration tests
+- upload → transcribe → JSON schema verification
 - invalid file / timeout / oversized file
 
-## E2E
-- UI upload + rezultat render
-- async job lifecycle (faza 2)
+## E2E tests
+- UI upload + result rendering
+- async job lifecycle (Phase 2)
 
 ## Test dataset
-- 20 SR audio fajlova
-- 20 EN audio fajlova
-- kratki/dugi/noisy sample
+- 20 SR audio files
+- 20 EN audio files
+- short/long/noisy samples
 
-KPI:
-- WER trend po jeziku
+KPIs:
+- WER trend by language
 - fallback rate
 
 ---
 
-## 10) Infra i deployment
+## 10) Infrastructure and deployment
 
 ## MVP
-- jedan server (EC2)
+- single server (EC2)
 - docker-compose: api + worker + redis
-- volume za uploads/results
+- volumes for uploads/results
 
-## Prod preporuka
+## Production recommendation
 - reverse proxy (Caddy/Nginx)
 - TLS
 - S3 storage
-- Redis managed
-- CI/CD deploy pipeline
+- managed Redis
+- CI/CD deployment pipeline
 
 ---
 
-## 11) Pricing model (predlog)
+## 11) Pricing model (proposal)
 
-- Free: 30 min/mesec
-- Pro: 10–20 EUR/mesec (fair-use)
+- Free: 30 min/month
+- Pro: 10–20 EUR/month (fair use)
 - Team: seat + usage
-- API: pay-as-you-go po minutu audia
+- API: pay-as-you-go per audio minute
 
 ---
 
-## 12) Rizici i mitigacije
+## 12) Risks and mitigations
 
-1. **OOM na medium/large modelu**
-   - default small + queue isolation + memory limits
-2. **Netacan SR transkript na šumu**
-   - preprocess + optional boost model + language hint
-3. **Spora obrada pod opterećenjem**
+1. **OOM on medium/large models**
+   - default to small + queue isolation + memory limits
+2. **Lower SR accuracy in noisy audio**
+   - preprocessing + optional larger model + language hint
+3. **Slow processing under load**
    - async queue + horizontal worker scaling
 4. **Cost creep**
-   - usage metrika + hard quotas
+   - usage metrics + hard quotas
 
 ---
 
-## 13) Operativni plan (prvih 7 dana)
+## 13) Operational plan (first 7 days)
 
-## Dan 1
+## Day 1
 - API skeleton + `/health`
 - upload validation
 
-## Dan 2
-- integrate transcribe service
+## Day 2
+- integrate transcription service
 - basic sync endpoint
 
-## Dan 3
-- JSON schema finalize
-- error codes standardizacija
+## Day 3
+- finalize JSON schema
+- standardize error codes
 
-## Dan 4
+## Day 4
 - minimal UI
-- E2E ručni test
+- manual E2E test
 
-## Dan 5
-- docker-compose + environment config
+## Day 5
+- docker-compose + environment configuration
 
-## Dan 6
+## Day 6
 - logging + metrics
 - load smoke test
 
-## Dan 7
-- hardening + doc + release v0.1
+## Day 7
+- hardening + docs + release v0.1
 
 ---
 
 ## 14) Definition of Done (MVP)
 
-- endpointi rade stabilno
-- dokumentovan API
-- reproducible lokalni start (`docker compose up`)
-- test primeri prolaze
-- known limitations dokumentovane
+- stable endpoints
+- documented API
+- reproducible local start (`docker compose up`)
+- test examples pass
+- known limitations documented

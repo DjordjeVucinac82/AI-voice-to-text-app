@@ -10,7 +10,6 @@ uvicorn api.main:app --host 0.0.0.0 --port 8080 --reload
 
 ## Docker build/run
 ```bash
-cd infra
 docker compose build
 docker compose up -d
 ```
@@ -40,22 +39,22 @@ docker compose up -d frontend
 ```
 
 ## HTTPS / TLS (Let's Encrypt)
-Production TLS je podešen preko **Caddy** (automatski Let's Encrypt).
+Production TLS is configured via **Caddy** (automatic Let's Encrypt).
 
-1) U `.env` podesi:
+1) Set in `.env`:
 - `DOMAIN=your-domain.com`
 - `LETSENCRYPT_EMAIL=you@domain.com`
 
 2) DNS:
-- `A` record za `DOMAIN` mora da pokazuje na server IP
-- portovi `80` i `443` otvoreni
+- `A` record for `DOMAIN` must point to the server IP
+- ports `80` and `443` must be open
 
-3) Start stack:
+3) Start the stack:
 ```bash
 docker compose up -d --build
 ```
 
-Caddy će automatski preuzeti i obnavljati certifikate.
+Caddy will automatically obtain and renew certificates.
 
-### Legacy opcija
-Nginx je ostavljen kao `legacy-nginx` profil (ručni certovi), ali nije podrazumevani put.
+### Legacy option
+Nginx is kept as the `legacy-nginx` profile (manual certificates), but it is not the default path.
