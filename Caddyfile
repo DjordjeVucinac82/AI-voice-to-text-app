@@ -1,0 +1,39 @@
+# Temporary HTTP access by IP (until domain DNS + TLS are set)
+http://63.177.250.82 {
+  encode gzip
+
+  @frontend_health path /frontend/health
+  handle @frontend_health {
+    header Content-Type application/json
+    respond `{"status":"ok","service":"frontend"}` 200
+  }
+
+  handle_path /api/* {
+    reverse_proxy api:8080
+  }
+
+  handle {
+    reverse_proxy frontend:3000
+  }
+}
+
+# Production hostname with automatic Let's Encrypt TLS
+{$DOMAIN} {
+  encode gzip
+
+  @frontend_health path /frontend/health
+  handle @frontend_health {
+    header Content-Type application/json
+    respond `{"status":"ok","service":"frontend"}` 200
+  }
+
+  handle_path /api/* {
+    reverse_proxy api:8080
+  }
+
+  handle {
+    reverse_proxy frontend:3000
+  }
+
+  tls {$LETSENCRYPT_EMAIL}
+}

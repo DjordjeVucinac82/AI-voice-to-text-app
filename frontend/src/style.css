@@ -1,0 +1,227 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #1e2333;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid #d7ddee;
+  background: #f6f8fc;
+  cursor: pointer;
+}
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.upload-card {
+  width: min(980px, 92vw);
+  background: #f9fbff;
+  border: 1px solid #e1e8f7;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(15, 35, 75, 0.08);
+}
+
+h1 { margin: 0 0 6px; }
+.subtitle { margin: 0 0 18px; color: #5b6688; }
+
+.upload-form { display: grid; gap: 12px; }
+
+/* Wider search-bar-like upload area centered */
+.upload-bar {
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid #d6def2;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 16px 0 22px;
+  background: #eef3ff; /* slightly darker white */
+  cursor: pointer;
+  color: #2a3558;
+}
+
+.upload-bar:hover { border-color: #a8b9ea; }
+.upload-bar.drag-over {
+  border-color: #6f8cff;
+  background: #e4edff;
+}
+.upload-bar input { display: none; }
+
+.progress-circle {
+  width: 34px;
+  height: 34px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.circle-svg {
+  width: 34px;
+  height: 34px;
+  transform: rotate(-90deg);
+}
+
+.circle-bg,
+.circle-bar {
+  fill: none;
+  stroke-width: 3;
+}
+
+.circle-bg { stroke: #c6d4ff; }
+.circle-bar {
+  stroke: #2f67ff;
+  stroke-linecap: round;
+  stroke-dasharray: 100.53;
+  stroke-dashoffset: 100.53;
+  transition: stroke-dashoffset 120ms linear;
+}
+
+.circle-pct {
+  position: absolute;
+  font-size: 10px;
+  color: #3152b5;
+  font-weight: 700;
+}
+
+.upload-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progress-text { color: #5d6f9f; }
+
+.cancel-btn {
+  border-radius: 8px;
+  border: 1px solid #b53a3a;
+  background: #d64242;
+  color: #fff;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.cancel-btn:hover { background: #eb4a4a; }
+
+.controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+select, button {
+  border-radius: 10px;
+  border: 1px solid #c7d3f1;
+  background: #ffffff;
+  color: #243056;
+  padding: 10px 12px;
+}
+
+button {
+  background: #2a4bdb;
+  border-color: #2a4bdb;
+  color: #fff;
+  cursor: pointer;
+}
+button:hover { background: #365dfb; }
+
+.output-wrap {
+  position: relative;
+  margin-top: 10px;
+}
+
+.output {
+  margin: 0;
+  background: #ffffff;
+  border: 1px solid #d7e0f5;
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 180px;
+  overflow: auto;
+  color: #1f2a4f;
+  user-select: text;
+}
+
+.copy-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #4d5ea8;
+  background: #1f2b5f;
+  color: #dfe6ff;
+  cursor: pointer;
+}
+.copy-btn:hover { background: #2a3a7c; }
+
+/* Dark mode */
+body.dark {
+  background: #0a0d13;
+  color: #e6e8ef;
+}
+
+body.dark .theme-toggle {
+  border-color: #353d56;
+  background: #171d2c;
+  color: #eef3ff;
+}
+
+body.dark .upload-card {
+  background: #121933;
+  border: 1px solid #2b355f;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+body.dark .subtitle { color: #9da8ce; }
+
+body.dark .upload-bar {
+  border: 1px solid #42529a;
+  background: #1a2135; /* less black */
+  color: #cfd8ff;
+}
+
+body.dark .upload-bar:hover { border-color: #6f84e8; }
+body.dark .upload-bar.drag-over {
+  border-color: #7ea0ff;
+  background: #202a46;
+}
+
+body.dark .circle-bg { stroke: #2f3b70; }
+body.dark .circle-bar { stroke: #4f7dff; }
+body.dark .circle-pct,
+body.dark .progress-text { color: #b9c7ff; }
+
+body.dark select,
+body.dark button {
+  border: 1px solid #3f4c88;
+  background: #111832;
+  color: #dfe6ff;
+}
+
+body.dark .output {
+  background: #0d1328;
+  border: 1px solid #2b355f;
+  color: #dfe6ff;
+}

@@ -9,6 +9,7 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY worker/app /app/app
+COPY worker/worker.py /app/worker.py
+COPY worker/__init__.py /app/__init__.py
 
-CMD ["python", "-m", "app.worker"]
+CMD ["python", "worker.py"]

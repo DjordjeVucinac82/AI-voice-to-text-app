@@ -1,0 +1,100 @@
+services:
+  api:
+    image: aivttapp-api:latest
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${API_PORT:-8080}:8080"
+    environment:
+      APP_ENV: ${APP_ENV}
+      MODEL_DEFAULT: ${MODEL_DEFAULT}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB}
+      API_KEY: ${API_KEY}
+      STORAGE_DIR: ${STORAGE_DIR}
+      REDIS_URL: ${REDIS_URL}
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS}
+    volumes:
+      - ./data/uploads:${STORAGE_DIR}/uploads
+      - ./data/results:${STORAGE_DIR}/results
+      - ./data/logs:${STORAGE_DIR}/logs
+    restart: unless-stopped
+
+  worker:
+    image: aivttapp-worker:latest
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    env_file:
+      - .env
+    environment:
+      APP_ENV: ${APP_ENV}
+      MODEL_DEFAULT: ${MODEL_DEFAULT}
+      STORAGE_DIR: ${STORAGE_DIR}
+    volumes:
+      - ./data/uploads:${STORAGE_DIR}/uploads
+      - ./data/results:${STORAGE_DIR}/results
+      - ./data/logs:${STORAGE_DIR}/logs
+    restart: unless-stopped
+
+  frontend:
+    image: aivttapp-frontend:latest
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - api
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2.10-alpine
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - api
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    profiles: ["legacy-nginx"]
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+      - api
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  redis_data:

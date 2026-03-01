@@ -1,4 +1,4 @@
-# AI Voice-to-Text App — Detaljan plan
+# AiVttApp — Detaljan plan
 
 ## 1) Scope i ciljevi
 
