@@ -4,3 +4,4 @@ infra/.env
 frontend/node_modules/
 frontend-ui.png
 *.pem
+vucinac.pem
