@@ -67,6 +67,13 @@ h1 { margin: 0 0 6px; }
 }
 .upload-bar input { display: none; }
 
+.upload-right-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
 .progress-circle {
   width: 34px;
   height: 34px;
@@ -74,6 +81,24 @@ h1 { margin: 0 0 6px; }
   display: grid;
   place-items: center;
   flex: 0 0 auto;
+}
+
+.folder-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #c7d3f1;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  padding: 0;
+  line-height: 1;
+}
+
+body.dark .folder-icon {
+  border-color: #3f4c88;
+  background: #111832;
 }
 
 .circle-svg {
@@ -144,6 +169,17 @@ button {
   cursor: pointer;
 }
 button:hover { background: #365dfb; }
+
+#recordBtn {
+  background: #0f766e;
+  border-color: #0f766e;
+}
+#recordBtn:hover { background: #0f8f84; }
+#recordBtn.recording {
+  background: #b42318;
+  border-color: #b42318;
+}
+#recordBtn.recording:hover { background: #d92d20; }
 
 .detected-lang {
   margin-top: 8px;
